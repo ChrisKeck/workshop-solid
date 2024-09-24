@@ -1,8 +1,9 @@
 function fileReaderInstance(){
 return {onload:({target: {result: text}})=>{return text},readAsText(text){return this.onload({target:{result:text}})}}}
 
-UnicodeFileToHtmTextConverter = function(fileBlob) {
+UnicodeFileToHtmTextConverter = function(fileBlob,fileReader=fileReaderInstance()) {
 	this._fileBlob = fileBlob;
+	this._fileReader = fileReader;
 };
 
 UnicodeFileToHtmTextConverter.prototype = {
@@ -10,7 +11,7 @@ UnicodeFileToHtmTextConverter.prototype = {
 	convertToHtml: function (callback) {
 
 		var self = this;
-		var fileReader = fileReaderInstance();
+		var fileReader = this._fileReader;
 		var text=fileReader.readAsText(this._fileBlob);
 		const result= self._basicHtmlEncode(text);
 		if (callback){
