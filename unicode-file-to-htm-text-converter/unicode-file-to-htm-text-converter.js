@@ -1,25 +1,26 @@
 function fileReaderInstance(){
 return {onload:({target: {result: text}})=>{return text},readAsText(text){return this.onload({target:{result:text}})}}}
 
-UnicodeFileToHtmTextConverter = function(fileBlob,fileReader=fileReaderInstance()) {
+UnicodeFileToHtmTextConverter = function(fileBlob,fileReader=fileReaderInstance(),encoders=[{encode(text){return text}}]) {
 	this._fileBlob = fileBlob;
 	this._fileReader = fileReader;
-};
+	this._encoders = encoders;
+}
 
 UnicodeFileToHtmTextConverter.prototype = {
 
 	convertToHtml: function (callback) {
-
 		var self = this;
 		var fileReader = this._fileReader;
 		var text=fileReader.readAsText(this._fileBlob);
-		const result= self._basicHtmlEncode(text);
+		let result= self.encode(text);
+		result= this._encoders.map(encoder=>encoder.encode(result))
 		if (callback){
 			callback(result)
 		}
 	},
 	
-	_basicHtmlEncode: function (source) {
+	encode: function (source) {
 
 		var stashNextCharacterAndAdvanceThePointer = function () {
 			var c = source.charAt(i);
